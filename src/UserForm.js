@@ -1,5 +1,5 @@
 import React from "react";
-import Yup from "yup";
+import * as Yup from "yup";
 import {withFormik, Form, Field} from "formik";
 
 /*- Name
@@ -8,7 +8,7 @@ import {withFormik, Form, Field} from "formik";
 - Terms of Service (checkbox)
 - A Submit button to send our form data to the server. */
 
-const Form = ({values, errors, touched, isSubmitting}) => {
+const UserForm = ({values, errors, touched, isSubmitting}) => {
     return (
         <form className="form">
             <div>
@@ -34,6 +34,33 @@ const Form = ({values, errors, touched, isSubmitting}) => {
     )
 }
 
-const FormikForm = 
+const UserFormikForm = withFormik({
+    mapPropsToValues({email, password, tos, name}) {
+        return {
+            email: email || "",
+            password: password || "",
+            tos: tos || false,
+            name: name || ""
+        };
+    },
+    validationSchema: Yup.object().shape({
+        email: Yup.string()
+            .email("Email not valid")
+            .required("Email is reuired"),
+        password: Yup.string()
+            .min(16, "Password must be 16 characters")
+            .required("Password is required"),
+        tos: Yup.string()
+            .required("tos required")
+    }),
+    handleSubmit(values, {resetForm, setErrors, setSubmitting}) {
+        if(values.email === "alreadytaken@atb.dev") {
+            setErrors({email: "That email is taken"});
+        } else {
 
-export default Form;
+        }
+        setSubmitting(false);
+    }
+})(UserForm);
+
+export default UserFormikForm;
